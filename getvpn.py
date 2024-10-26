@@ -4,7 +4,6 @@ import json
 import pyaes
 import binascii
 from datetime import datetime
-
 a = 'http://api.skrapp.net/api/serverlist'
 b = {
     'accept': '/',
