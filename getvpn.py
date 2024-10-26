@@ -3,7 +3,7 @@ import base64
 import json
 import pyaes
 import binascii
-from datetime import datetime
+
 a = 'http://api.skrapp.net/api/serverlist'
 b = {
     'accept': '/',
@@ -29,8 +29,10 @@ if j.status_code == 200:
     l = binascii.unhexlify(k)
     m = f(l, d, e)
     n = json.loads(m)
+    
     for o in n['data']:
         p = f"aes-256-cfb:{o['password']}@{o['ip']}:{o['port']}"
         q = base64.b64encode(p.encode('utf-8')).decode('utf-8')
         r = f"ss://{q}#{o['title']}"
-        print(r)
+        if r:  # 只打印非空结果
+            print(r)
