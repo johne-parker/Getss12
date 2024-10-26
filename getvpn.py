@@ -34,5 +34,5 @@ if j.status_code == 200:
         p = f"aes-256-cfb:{o['password']}@{o['ip']}:{o['port']}"
         q = base64.b64encode(p.encode('utf-8')).decode('utf-8')
         r = f"ss://{q}#{o['title']}"
-        if r:  # 只打印非空结果
-            print(r)
+        if r.strip():  # 只打印非空结果
+            print(r.strip())
