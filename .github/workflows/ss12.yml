@@ -34,7 +34,7 @@ jobs:
 
     - name: Run the script
       run: |
-        python getvpn.py >> ss12.txt
+        python getvpn.py | grep -v '^$' >> ss12.txt
 
     - name: Commit changes
       run: |
