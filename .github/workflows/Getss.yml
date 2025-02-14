@@ -1,0 +1,14 @@
+name: ss12 Scheduler
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # 每天UTC时间0点运行，北京时间8点
+
+jobs:
+  ss12_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run ss12.yml
+        uses: ./.github/workflows/ss12.yml 
