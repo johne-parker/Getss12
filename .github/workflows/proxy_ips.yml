@@ -1,4 +1,4 @@
-name: Update Proxy IPs as JSON with PL Filter
+name: Update Proxy PL_IPs 
 
 on:
   workflow_dispatch: # 允许手动触发工作流
@@ -25,29 +25,20 @@ jobs:
       run: |
         jq -R -s -c '[split("\n") | map(select(length > 0))]' pl_ips.txt > proxyip.json
 
-    - name: Check if first record changed
-      id: check_change
-      run: |
-        FIRST_RECORD_NEW=$(jq -r '.[0]' proxyip.json)
-        FIRST_RECORD_OLD=$(jq -r '.[0]' proxyip.json) #这里使用json文件自身，用于第一次比较，后续的比较需要使用旧的json文件
-        if [ "$FIRST_RECORD_NEW" != "$FIRST_RECORD_OLD" ]; then
-          echo "::set-output name=changed::true"
-        else
-          echo "::set-output name=changed::false"
-        fi
-        echo "new: $FIRST_RECORD_NEW"
-        echo "old: $FIRST_RECORD_OLD"
-
-    - name: Clear proxyip.json for next update
-      if: steps.check_change.outputs.changed == 'true'
+    - name: Clear proxyip.json
       run: |
         echo "[]" > proxyip.json
 
+    - name: Update proxyip.json
+      run: |
+        cp pl_ips.txt temp.txt;
+        jq -R -s -c '[split("\n") | map(select(length > 0))]' temp.txt > proxyip.json;
+        rm temp.txt
+
     - name: Commit and push changes
-      if: steps.check_change.outputs.changed == 'true'
       run: |
         git config --global user.email "actions@github.com"
         git config --global user.name "GitHub Actions"
         git add proxyip.json
-        git commit -m "Update proxyip.json if first record changed"
+        git commit -m "Update proxyip.json with PL data"
         git push origin HEAD:main
