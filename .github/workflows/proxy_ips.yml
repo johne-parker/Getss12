@@ -22,9 +22,6 @@ jobs:
     - name: Set file permissions
       run: chmod +rw proxyip.txt
 
-    - name: Convert file encoding
-      run: iconv -f UTF-8 -t UTF-8 proxyip.txt -o proxyip.txt
-
     - name: Debug Git state
       run: |
         git remote -v
