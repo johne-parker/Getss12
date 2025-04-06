@@ -18,9 +18,6 @@ jobs:
     - name: Debug raw_data.txt
       run: cat raw_data.txt
 
-    - name: Convert line endings
-      run: dos2unix raw_data.txt
-      
     - name: Extract IPs and ports
       run: |
         cat raw_data.txt | awk -F',' '{print $1":"$2}' > proxyip.txt
