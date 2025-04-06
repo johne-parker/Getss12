@@ -20,7 +20,7 @@ jobs:
         cat raw_data.txt | awk -F',' '{print $1":"$2}' > proxyip.txt
 
     - name: Upload proxyip.txt
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v3.1.3
       with:
         name: proxyip
         path: proxyip.txt
