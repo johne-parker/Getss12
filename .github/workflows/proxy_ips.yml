@@ -1,4 +1,4 @@
-name: Extract Proxy IPs
+name: Extract Proxy IPs and Commit
 
 on:
   workflow_dispatch: # 允许手动触发工作流
@@ -14,19 +14,18 @@ jobs:
     - name: Download raw data
       run: |
         curl -s "https://raw.githubusercontent.com/FoolVPN-ID/Nautica/refs/heads/main/proxyList.txt" > raw_data.txt # 替换为你的 raw 文件 URL
-    
-    - name: Debug raw_data.txt
-      run: cat raw_data.txt
 
     - name: Extract IPs and ports
       run: |
         cat raw_data.txt | awk -F',' '{print $1":"$2}' > proxyip.txt
-    
-    - name: Check proxyip.txt size
-      run: stat -c "%s" proxyip.txt
-      
-    - name: Upload proxyip.txt
-      uses: actions/upload-artifact@v4
-      with:
-        name: proxyip
-        path: proxyip.txt
+
+    - name: Commit changes
+      run: |
+        git config --local user.name "GitHub Actions"
+        git config --local user.email "actions@github.com"
+        git add proxyip.txt
+        git commit -m "Update proxyip.txt with generated data" || echo "No changes to commit"
+
+    - name: Push changes to main
+      run: |
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} main
