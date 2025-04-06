@@ -15,6 +15,12 @@ jobs:
       run: |
         curl -s "https://raw.githubusercontent.com/FoolVPN-ID/Nautica/refs/heads/main/proxyList.txt" > raw_data.txt # 替换为你的 raw 文件 URL
 
+    - name: Set file permissions
+      run: chmod +rw proxyip.txt
+    
+    - name: Convert file encoding
+      run: iconv -f UTF-8 -t UTF-8 proxyip.txt -o proxyip.txt
+    
     - name: Extract IPs and ports
       run: |
         cat raw_data.txt | awk -F',' '{print $1":"$2}' > proxyip.txt
