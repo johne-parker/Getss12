@@ -1,0 +1,26 @@
+name: Extract Proxy IPs
+
+on:
+  workflow_dispatch: # 允许手动触发工作流
+
+jobs:
+  extract_ips:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Download raw data
+      run: |
+        curl -s "https://raw.githubusercontent.com/FoolVPN-ID/Nautica/refs/heads/main/proxyList.txt" > raw_data.txt # 替换为你的 raw 文件 URL
+
+    - name: Extract IPs and ports
+      run: |
+        cat raw_data.txt | awk -F',' '{print $1":"$2}' > proxyip.txt
+
+    - name: Upload proxyip.txt
+      uses: actions/upload-artifact@v3
+      with:
+        name: proxyip
+        path: proxyip.txt
