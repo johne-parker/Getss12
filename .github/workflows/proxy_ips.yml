@@ -14,11 +14,20 @@ jobs:
     - name: Download raw data
       run: |
         curl -s "https://raw.githubusercontent.com/FoolVPN-ID/Nautica/refs/heads/main/proxyList.txt" > raw_data.txt # 替换为你的 raw 文件 URL
+    
+    - name: Debug raw_data.txt
+      run: cat raw_data.txt
 
+    - name: Convert line endings
+      run: dos2unix raw_data.txt
+      
     - name: Extract IPs and ports
       run: |
         cat raw_data.txt | awk -F',' '{print $1":"$2}' > proxyip.txt
-
+    
+    - name: Check proxyip.txt size
+      run: stat -c "%s" proxyip.txt
+      
     - name: Upload proxyip.txt
       uses: actions/upload-artifact@v4
       with:
