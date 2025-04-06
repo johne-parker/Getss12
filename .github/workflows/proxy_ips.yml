@@ -8,30 +8,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Checkout repository (v2)
+      uses: actions/checkout@v2 # 尝试使用 v2
 
     - name: Download raw data
       run: |
         curl -s "https://raw.githubusercontent.com/FoolVPN-ID/Nautica/refs/heads/main/proxyList.txt" > raw_data.txt # 替换为你的 raw 文件 URL
 
-    - name: Set file permissions
-      run: chmod +rw proxyip.txt
-    
-    - name: Convert file encoding
-      run: iconv -f UTF-8 -t UTF-8 proxyip.txt -o proxyip.txt
-    
     - name: Extract IPs and ports
       run: |
         cat raw_data.txt | awk -F',' '{print $1":"$2}' > proxyip.txt
 
-    - name: Commit changes
+    - name: Set file permissions
+      run: chmod +rw proxyip.txt
+
+    - name: Convert file encoding
+      run: iconv -f UTF-8 -t UTF-8 proxyip.txt -o proxyip.txt
+
+    - name: Debug Git state
       run: |
-        git config --local user.name "GitHub Actions"
-        git config --local user.email "actions@github.com"
+        git remote -v
+        git config --list
+        git status
+        cat proxyip.txt #打印生成的文件内容
+
+    - name: Commit and push proxyip.txt
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
         git add proxyip.txt
         git commit -m "Update proxyip.txt with generated data" || echo "No changes to commit"
+        git push --force-with-lease https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main # 尝试 force-with-lease 和 HEAD:main
 
-    - name: Push changes to main
-      run: |
-        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} main
+    - name: Upload proxyip.txt
+      uses: actions/upload-artifact@v4
+      with:
+        name: proxyip
+        path: proxyip.txt
