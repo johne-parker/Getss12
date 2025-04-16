@@ -26,13 +26,24 @@ j = requests.post(a, headers=b, data=c)
 
 if j.status_code == 200:
     k = j.text.strip()
-    l = binascii.unhexlify(k)
-    m = f(l, d, e)
-    n = json.loads(m)
-    
-    for o in n['data']:
-        p = f"aes-256-cfb:{o['password']}@{o['ip']}:{o['port']}"
-        q = base64.b64encode(p.encode('utf-8')).decode('utf-8')
-        r = f"ss://{q}#{o['title']}"
-        if r.strip():  # 只打印非空结果
-            print(r.strip())
+    try:
+        l = binascii.unhexlify(k)
+        m = f(l, d, e)
+        print("Decrypted content:", m.decode('utf-8', errors='ignore'))
+        n = json.loads(m)
+
+        if 'data' not in n:
+            print("No 'data' in response:", n)
+            exit(1)
+
+        for o in n['data']:
+            p = f"aes-256-cfb:{o['password']}@{o['ip']}:{o['port']}"
+            q = base64.b64encode(p.encode('utf-8')).decode('utf-8')
+            r = f"ss://{q}#{o['title']}"
+            if r.strip():
+                print(r.strip())
+    except Exception as ex:
+        print("Error while parsing response:", ex)
+        print("Raw text:", k)
+else:
+    print(f"Request failed: {j.status_code}")
